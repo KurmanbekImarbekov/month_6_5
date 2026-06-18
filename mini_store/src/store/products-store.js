@@ -52,3 +52,42 @@ export const useDeleteFavoriteMutation = () => {
     },
   });
 };
+
+export const useCartQuery = () => {
+  return useQuery({
+    queryKey: ["cart"],
+    queryFn: async () => {
+      const { data } = await $authApi.get("/cart");
+      return getResponseData(data);
+    },
+  });
+};
+
+export const useAddToCartMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (productId) => {
+      const { data } = await $authApi.post("/cart", { productId });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+export const useDeleteCartItemMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (productId) => {
+      const { data } = await $authApi.delete(`/cart/${productId}`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
