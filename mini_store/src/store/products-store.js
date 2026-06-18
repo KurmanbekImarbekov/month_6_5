@@ -18,7 +18,7 @@ export const useFavoritesQuery = () => {
     queryKey: ["favorites"],
     queryFn: async () => {
       const { data } = await $authApi.get("/favorites");
-      return getResponseData(data);
+      return data?.data?.products ?? data?.products ?? [];
     },
   });
 };

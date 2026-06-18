@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import "./favorit.css";
 import {
   useFavoritesQuery,
   useDeleteFavoriteMutation,
@@ -33,7 +34,9 @@ const Favorites = () => {
   const handleAddToCart = (productId) => {
     addToCartMutation.mutate(productId, {
       onError: (error) => {
-        toast.error(getErrorMessage(error, "Не удалось добавить товар в корзину"));
+        toast.error(
+          getErrorMessage(error, "Не удалось добавить товар в корзину"),
+        );
       },
     });
   };
@@ -43,8 +46,7 @@ const Favorites = () => {
     deleteFavoriteMutation.variables === productId;
 
   const isCartLoading = (productId) =>
-    addToCartMutation.isPending &&
-    addToCartMutation.variables === productId;
+    addToCartMutation.isPending && addToCartMutation.variables === productId;
 
   if (isLoading) {
     return <div className="loading">Загрузка избранного...</div>;
@@ -69,37 +71,38 @@ const Favorites = () => {
     <div className="favorites-container">
       <h1>Избранное</h1>
 
-      <div className="products-grid">
-        {items.map((item) => {
-          const title = item.title || item.name;
-          const productId = item._id || item.productId;
-          const deleting = isDeleting(productId);
-          const cartLoading = isCartLoading(productId);
+      <div className="favorites-grid">
+        {items.map((product) => {
+          const deleting = isDeleting(product._id);
+          const cartLoading = isCartLoading(product._id);
 
           return (
-            <div key={productId} className="product-card">
-              <div className="product-image-wrapper">
-                <img src={item.image} alt={title} className="product-image" />
+            <div key={product._id} className="favorite-card">
+              <div className="favorite-image-wrapper">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="favorite-image"
+                />
                 <button
                   className="favorite-button favorite-button-active"
                   type="button"
                   aria-label="Удалить из избранного"
                   disabled={deleting}
-                  onClick={() => handleDeleteFavorite(productId)}
+                  onClick={() => handleDeleteFavorite(product._id)}
                 >
                   ♥
                 </button>
               </div>
-              <div className="product-info">
-                <h3 className="product-title">{title}</h3>
-                <p className="product-description">{item.description}</p>
-                <div className="product-footer">
-                  <span className="product-price">{item.price} сом</span>
+              <div className="favorite-info">
+                <h3 className="favorite-title">{product.name}</h3>
+                <div className="favorite-footer">
+                  <span className="favorite-price">{product.price} сом</span>
                   <button
                     className="btn-add-to-cart"
                     type="button"
                     disabled={cartLoading}
-                    onClick={() => handleAddToCart(productId)}
+                    onClick={() => handleAddToCart(product._id)}
                   >
                     {cartLoading ? "..." : "В корзину"}
                   </button>

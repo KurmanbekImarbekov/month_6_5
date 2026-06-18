@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import "./basket.css";
 import {
   useCartQuery,
   useDeleteCartItemMutation,
