@@ -5,7 +5,7 @@ import "./AuthForm.css";
 const LoginForm = () => {
   const loginMutation = useLoginMutation();
   const [formData, setFormData] = useState({
-    email: "",
+    login: "",
     password: "",
   });
 
@@ -22,13 +22,14 @@ const LoginForm = () => {
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
       <label className="auth-field">
-        <span>Email</span>
+        <span>Логин</span>
         <input
-          type="email"
-          name="email"
-          value={formData.email}
+          type="text"
+          name="login"
+          value={formData.login}
           onChange={handleChange}
-          placeholder="example@mail.com"
+          placeholder="Введите логин"
+          autoComplete="username"
           required
         />
       </label>
@@ -41,6 +42,7 @@ const LoginForm = () => {
           value={formData.password}
           onChange={handleChange}
           placeholder="Введите пароль"
+          autoComplete="current-password"
           required
         />
       </label>

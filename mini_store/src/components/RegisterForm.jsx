@@ -5,8 +5,7 @@ import "./AuthForm.css";
 const RegisterForm = () => {
   const registerMutation = useRegisterMutation();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    login: "",
     password: "",
   });
 
@@ -23,25 +22,14 @@ const RegisterForm = () => {
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
       <label className="auth-field">
-        <span>Имя</span>
+        <span>Логин</span>
         <input
           type="text"
-          name="name"
-          value={formData.name}
+          name="login"
+          value={formData.login}
           onChange={handleChange}
-          placeholder="Ваше имя"
-          required
-        />
-      </label>
-
-      <label className="auth-field">
-        <span>Email</span>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="example@mail.com"
+          placeholder="Придумайте логин"
+          autoComplete="username"
           required
         />
       </label>
@@ -54,6 +42,7 @@ const RegisterForm = () => {
           value={formData.password}
           onChange={handleChange}
           placeholder="Минимум 6 символов"
+          autoComplete="new-password"
           minLength={6}
           required
         />

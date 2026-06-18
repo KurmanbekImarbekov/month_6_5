@@ -6,6 +6,18 @@ import { useAuth } from "../hooks/use-auth";
 
 const getAuthData = (responseData) => responseData?.data ?? responseData;
 
+const normalizeLogin = (login) => login.trim();
+
+const createHiddenEmail = (login) => {
+  const emailLogin = normalizeLogin(login)
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  return `${emailLogin || "user"}_${Date.now()}@shoplab.local`;
+};
+
 const saveAuthData = (responseData) => {
   const authData = getAuthData(responseData);
   const token = authData?.accessToken || authData?.token;
@@ -19,6 +31,12 @@ const saveAuthData = (responseData) => {
 };
 
 const getErrorMessage = (error, fallback) => {
+  const errors = error?.response?.data?.errors;
+
+  if (Array.isArray(errors) && errors.length > 0) {
+    return errors.join(", ");
+  }
+
   return (
     error?.response?.data?.message ||
     error?.response?.data?.error ||
@@ -30,8 +48,12 @@ export const useLoginMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (payload) => {
-      const { data } = await $mainApi.post("/auth/sign-in", payload);
+    mutationFn: async ({ login, password }) => {
+      const { data } = await $mainApi.post("/auth/sign-in", {
+        loginOrEmail: normalizeLogin(login),
+        password,
+      });
+
       return data;
     },
     onSuccess: (responseData) => {
@@ -49,8 +71,14 @@ export const useRegisterMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (payload) => {
-      const { data } = await $mainApi.post("/auth/sign-up", payload);
+    mutationFn: async ({ login, password }) => {
+      const normalizedLogin = normalizeLogin(login);
+      const { data } = await $mainApi.post("/auth/sign-up", {
+        login: normalizedLogin,
+        email: createHiddenEmail(normalizedLogin),
+        password,
+      });
+
       return data;
     },
     onSuccess: (responseData) => {
