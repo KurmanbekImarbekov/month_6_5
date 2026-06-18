@@ -7,6 +7,7 @@ const $mainApi = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 const $authApi = axios.create({
@@ -14,6 +15,7 @@ const $authApi = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 $authApi.interceptors.request.use((config) => {
@@ -25,5 +27,24 @@ $authApi.interceptors.request.use((config) => {
 
   return config;
 });
+
+$authApi.interceptors.response.use(
+  (config) => config,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response.status === 401) {
+      try {
+        const { data } = await $authApi.post("/auth/refresh");
+        if (data.accessToken) {
+          localStorage.setItem("accessToken", data.accessToken);
+        }
+        return $authApi.request(originalRequest);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }
+    return Promise.reject(error);
+  },
+);
 
 export { $mainApi, $authApi };

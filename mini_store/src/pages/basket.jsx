@@ -31,8 +31,8 @@ const Basket = () => {
   const items = Array.isArray(cartItems) ? cartItems : [];
 
   const totalPrice = items.reduce(
-    (sum, item) => sum + (item.price || 0),
-    0
+    (sum, item) => sum + (item.product?.price || 0) * (item.quantity || 1),
+    0,
   );
 
   if (items.length === 0) {
@@ -50,26 +50,28 @@ const Basket = () => {
 
       <div className="basket-items">
         {items.map((item) => {
-          const title = item.title || item.name;
-          const loading = isDeleting(item._id || item.productId);
+          const product = item.product;
+          const loading = isDeleting(product._id);
 
           return (
-            <div key={item._id || item.productId} className="basket-item">
+            <div key={product._id} className="basket-item">
               <img
-                src={item.image}
-                alt={title}
+                src={product.image}
+                alt={product.name}
                 className="basket-item-image"
               />
               <div className="basket-item-info">
-                <h3 className="basket-item-title">{title}</h3>
-                <p className="basket-item-description">{item.description}</p>
-                <span className="basket-item-price">{item.price} сом</span>
+                <h3 className="basket-item-title">{product.name}</h3>
+                <span className="basket-item-price">{product.price} сом</span>
+                <span className="basket-item-quantity">
+                  Количество: {item.quantity}
+                </span>
               </div>
               <button
                 className="basket-item-delete"
                 type="button"
                 disabled={loading}
-                onClick={() => handleDeleteItem(item._id || item.productId)}
+                onClick={() => handleDeleteItem(product._id)}
               >
                 {loading ? "Удаление..." : "Удалить"}
               </button>

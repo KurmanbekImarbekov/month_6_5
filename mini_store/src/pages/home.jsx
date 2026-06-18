@@ -68,6 +68,7 @@ const Home = () => {
   }
 
   return (
+      
     <div className="home-container">
       <div className="hero-banner">
         <h1>Добро пожаловать в магазин</h1>

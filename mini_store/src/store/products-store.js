@@ -58,7 +58,7 @@ export const useCartQuery = () => {
     queryKey: ["cart"],
     queryFn: async () => {
       const { data } = await $authApi.get("/cart");
-      return getResponseData(data);
+      return data?.data?.items ?? data?.items ?? [];
     },
   });
 };
@@ -68,7 +68,10 @@ export const useAddToCartMutation = () => {
 
   return useMutation({
     mutationFn: async (productId) => {
-      const { data } = await $authApi.post("/cart", { productId });
+      const { data } = await $authApi.post("/cart", {
+        productId,
+        quantity: 1,
+      });
       return data;
     },
     onSuccess: () => {
@@ -77,7 +80,6 @@ export const useAddToCartMutation = () => {
     },
   });
 };
-
 export const useDeleteCartItemMutation = () => {
   const queryClient = useQueryClient();
 
