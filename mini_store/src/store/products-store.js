@@ -3,12 +3,22 @@ import { $authApi } from "../api/axios";
 
 const getResponseData = (responseData) => responseData?.data ?? responseData;
 
-export const useProductsQuery = () => {
+export const useProductsQuery = (params = {}) => {
   return useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", params],
     queryFn: async () => {
-      const { data } = await $authApi.get("/products");
+      const { data } = await $authApi.get("/products", { params });
       return getResponseData(data);
+    },
+  });
+};
+
+export const useCategoriesQuery = () => {
+  return useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data } = await $authApi.get("/categories");
+      return data?.data ?? data ?? [];
     },
   });
 };
@@ -90,6 +100,45 @@ export const useDeleteCartItemMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+export const useClearCartMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await $authApi.delete("/cart");
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+export const useCreateOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderData) => {
+      const { data } = await $authApi.post("/orders", orderData);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+export const useOrdersQuery = () => {
+  return useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      const { data } = await $authApi.get("/orders");
+      return data?.data ?? data ?? [];
     },
   });
 };
